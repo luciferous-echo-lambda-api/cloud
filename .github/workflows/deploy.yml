@@ -1,0 +1,55 @@
+name: deploy.yml
+
+on:
+  workflow_call: 
+    inputs: 
+      stageName:
+        required: true
+        type: string
+      tagName:
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.stageName }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: inputs.tagName == ''
+
+      - name: Checkout Tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: inputs.tagName != ''
+        with:
+          ref: ${{ inputs.tagName }}
+
+      - name: Assume Role
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_OIDC_IAM_ROLE_ARN }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        with:
+          terraform_version: 1.14.9
+
+      - name: Terraform init
+        run: make init
+        working-directory: terraform/envs/${{ inputs.stageName }}
+        env:
+          BACKEND_S3_BUCKET: ${{ secrets.BACKEND_S3_BUCKET }}
+          BACKEND_S3_KEY: ${{ secrets.BACKEND_S3_KEY }}
+          BACKEND_REGION: ${{ vars.AWS_REGION }}
+
+      - name: Terraform apply
+        run: make apply
+        working-directory: terraform/envs/${{ inputs.stageName }}
+        env:
+          TF_VAR_REGION: ${{ vars.AWS_REGION }}
+          TF_VAR_SYSTEM_NAME: ${{ vars.SYSTEM_NAME }}
+          TF_VAR_SLACK_INCOMING_WEBHOOK_ERROR_NOTIFIER_01: ${{ secrets.SLACK_INCOMING_WEBHOOK_ERROR_NOTIFIER_01 }}

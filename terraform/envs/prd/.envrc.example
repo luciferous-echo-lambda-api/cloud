@@ -1,0 +1,3 @@
+export BACKEND_S3_BUCKET="<Backend S3 Bucket>"
+export BACKEND_S3_KEY="<Backend S3 Key>"
+export BACKEND_REGION="<AWS Region>"
