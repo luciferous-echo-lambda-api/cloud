@@ -130,6 +130,9 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+dynamodb = [
+    { name = "mypy-boto3-dynamodb" },
+]
 events = [
     { name = "mypy-boto3-events" },
 ]
@@ -322,6 +325,15 @@ source = { registry = "https://pypi.flatt.tech/simple/" }
 sdist = { url = "https://pypi.flatt.tech/files/packages/32/58/250751940d75c8019659e15482d548a4aa3b6ce122c515102a4bfdac50e3/jsonpath_ng-1.8.0.tar.gz", hash = "sha256:54252968134b5e549ea5b872f1df1168bd7defe1a52fed5a358c194e1943ddc3", size = 74513, upload-time = "2026-02-24T14:42:06.182Z" }
 wheels = [
     { url = "https://pypi.flatt.tech/files/packages/03/99/33c7d78a3fb70d545fd5411ac67a651c81602cc09c9cf0df383733f068c5/jsonpath_ng-1.8.0-py3-none-any.whl", hash = "sha256:b8dde192f8af58d646fc031fac9c99fe4d00326afc4148f1f043c601a8cfe138", size = 67844, upload-time = "2026-02-28T00:53:19.637Z" },
+]
+
+[[package]]
+name = "mypy-boto3-dynamodb"
+version = "1.42.73"
+source = { registry = "https://pypi.flatt.tech/simple/" }
+sdist = { url = "https://pypi.flatt.tech/files/packages/70/a2/fc93b44ed07322ede4cc45c6c66370ff53ad8a195b95f9f80d1edbb7735a/mypy_boto3_dynamodb-1.42.73.tar.gz", hash = "sha256:3fd9e093a8c982a53d55f6ac3d109d89957fe82b5c7ece65f27b772ed7a5ca9b", size = 48723, upload-time = "2026-03-20T19:59:32.033Z" }
+wheels = [
+    { url = "https://pypi.flatt.tech/files/packages/6a/41/f4ececbceb13d1c2fbc1cfee56d65231c98b19f4d0b41baf3ab5d88b6863/mypy_boto3_dynamodb-1.42.73-py3-none-any.whl", hash = "sha256:2df84f71ff41fba5f12e803be19c4483daa64ba030fc9d62ba5e5f9f09a4def8", size = 58828, upload-time = "2026-03-20T19:59:24.878Z" },
 ]
 
 [[package]]
@@ -583,7 +595,7 @@ dev = [
     { name = "aws-cloudwatch-logs-url" },
     { name = "black" },
     { name = "boto3" },
-    { name = "boto3-stubs", extra = ["events"] },
+    { name = "boto3-stubs", extra = ["dynamodb", "events"] },
     { name = "botocore" },
     { name = "freezegun" },
     { name = "isort" },
@@ -602,7 +614,7 @@ dev = [
     { name = "aws-cloudwatch-logs-url", specifier = "==1.0.3" },
     { name = "black", specifier = ">=26.3.1" },
     { name = "boto3", specifier = "==1.42.97" },
-    { name = "boto3-stubs", extras = ["events"], specifier = "==1.42.97" },
+    { name = "boto3-stubs", extras = ["dynamodb", "events"], specifier = "==1.42.97" },
     { name = "botocore", specifier = "==1.42.97" },
     { name = "freezegun", specifier = ">=1.5.5" },
     { name = "isort", specifier = ">=8.0.1" },
