@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "boto3"
+      - dependency-name: "botocore"
+      - dependency-name: "boto3-stubs"
+      - dependency-name: "aws-lambda-powertools"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
