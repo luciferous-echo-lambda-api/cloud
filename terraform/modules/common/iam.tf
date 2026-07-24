@@ -73,6 +73,60 @@ resource "aws_iam_policy" "event_bridge_invoke_api_destination" {
 }
 
 # ================================================================
+# Policy DynamoDB Put Item
+# ================================================================
+
+data "aws_iam_policy_document" "policy_dynamodb_put_item" {
+  policy_id = "policy_dynamodb_put_item"
+  statement {
+    sid       = "PolicyDynamodbPutItem"
+    effect    = local.iam.effect.allow
+    actions   = ["dynamodb:PutItem"]
+    resources = [aws_dynamodb_table.tmp.arn]
+  }
+}
+
+resource "aws_iam_policy" "policy_dynamodb_put_item" {
+  policy = data.aws_iam_policy_document.policy_dynamodb_put_item.json
+}
+
+# ================================================================
+# Policy DynamoDB Get Item
+# ================================================================
+
+data "aws_iam_policy_document" "policy_dynamodb_get_item" {
+  policy_id = "policy_dynamodb_get_item"
+  statement {
+    sid       = "PolicyDynamodbGetItem"
+    effect    = local.iam.effect.allow
+    actions   = ["dynamodb:GetItem"]
+    resources = [aws_dynamodb_table.tmp.arn]
+  }
+}
+
+resource "aws_iam_policy" "policy_dynamodb_get_item" {
+  policy = data.aws_iam_policy_document.policy_dynamodb_get_item.json
+}
+
+# ================================================================
+# Policy KMS Decrypt
+# ================================================================
+
+data "aws_iam_policy_document" "policy_kms_decrypt" {
+  policy_id = "policy_kms_decrypt"
+  statement {
+    sid       = "PolicyKmsDecrypt"
+    effect    = local.iam.effect.allow
+    actions   = ["kms:Decrypt"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "policy_kms_decrypt" {
+  policy = data.aws_iam_policy_document.policy_kms_decrypt.json
+}
+
+# ================================================================
 # Role Lambda Error Processor
 # ================================================================
 
@@ -103,4 +157,40 @@ resource "aws_iam_role_policy_attachment" "event_bridge_invoke_api_destination" 
   }
   policy_arn = each.value
   role       = aws_iam_role.event_bridge_invoke_api_destination.name
+}
+
+# ================================================================
+# Role Lambda URL Functions
+# ================================================================
+
+resource "aws_iam_role" "lambda_url_functions" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_url_functions" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    b = aws_iam_policy.policy_dynamodb_put_item.arn
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.lambda_url_functions.name
+}
+
+# ================================================================
+# Role Lambda NocoBase Inserter
+# ================================================================
+
+resource "aws_iam_role" "lambda_nocobase_inserter" {
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_lambda.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_nocobase_inserter" {
+  for_each = {
+    a = "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
+    b = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+    c = aws_iam_policy.policy_dynamodb_get_item.arn
+    d = aws_iam_policy.policy_kms_decrypt.arn
+  }
+  policy_arn = each.value
+  role       = aws_iam_role.lambda_nocobase_inserter.name
 }
