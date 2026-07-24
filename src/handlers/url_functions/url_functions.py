@@ -1,5 +1,4 @@
 import json
-from compression.zstd import compress
 from typing import TYPE_CHECKING
 from uuid import uuid7
 
@@ -8,6 +7,7 @@ from pydantic_settings import BaseSettings
 from utils.aws import create_resource
 from utils.logger import create_logger, logging_function, logging_handler
 from utils.logger.logger import custom_default
+from utils.usecases import ddb_insert
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
@@ -40,7 +40,7 @@ def main(
     env = EnvironmentVariables()
     record_id = str(uuid7())
     text = json.dumps(event, indent=2, ensure_ascii=False, default=custom_default)
-    insert(
+    ddb_insert(
         text=text,
         record_id=record_id,
         table_name=env.ddb_table_name,
@@ -49,14 +49,9 @@ def main(
     return {
         "statusCode": 200,
         "headers": {"Content-Type": "application/json", "X-Record-ID": record_id},
-        "body": text,
+        "body": json.dumps(
+            {"id": record_id, "event": event},
+            ensure_ascii=False,
+            default=custom_default,
+        ),
     }
-
-
-@logging_function(logger)
-def insert(
-    *, text: str, record_id: str, table_name: str, resource: DynamoDBServiceResource
-):
-    table: Table = resource.Table(table_name)
-    binary = compress(text.encode(), level=10)
-    table.put_item(Item={"id": record_id, "binary-request": binary})
