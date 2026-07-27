@@ -19,10 +19,9 @@ permissions:
   actions: read
 
 jobs:
-  release-production:
-    name: Release Production
+  plan-production:
+    name: Plan Production
     uses: ./.github/workflows/deploy.yml
     with: 
       stageName: prd
-      tagName: ${{ github.ref }}
     secrets: inherit
