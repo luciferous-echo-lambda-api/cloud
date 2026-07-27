@@ -38,3 +38,13 @@ resource "aws_ssm_parameter" "cf_access_client_secret" {
   type  = "SecureString"
   value = var.cf_access_client_secret
 }
+
+# ================================================================
+# Outputs
+# ================================================================
+
+resource "aws_ssm_parameter" "url_lambda_url_function" {
+  name  = "${local.ssm.prefix_outputs}/url/lambda-url-functions"
+  type  = "String"
+  value = aws_lambda_function_url.url_functions.function_url
+}
