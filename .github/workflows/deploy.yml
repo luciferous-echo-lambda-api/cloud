@@ -8,6 +8,9 @@ on:
         type: string
       tagName:
         type: string
+      isDeploy:
+        type: boolean
+        default: false
 
 jobs:
   deploy:
@@ -48,8 +51,28 @@ jobs:
 
       - name: Terraform apply
         run: make apply
+        if: inputs.isDeploy
         working-directory: terraform/envs/${{ inputs.stageName }}
         env:
           TF_VAR_REGION: ${{ vars.AWS_REGION }}
           TF_VAR_SYSTEM_NAME: ${{ vars.SYSTEM_NAME }}
           TF_VAR_SLACK_INCOMING_WEBHOOK_ERROR_NOTIFIER_01: ${{ secrets.SLACK_INCOMING_WEBHOOK_ERROR_NOTIFIER_01 }}
+          TF_VAR_CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          TF_VAR_CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          TF_VAR_NOCOBASE_API_KEY: ${{ secrets.NOCOBASE_API_KEY }}
+          TF_VAR_NOCOBASE_COLLECTION: ${{ vars.NOCOBASE_COLLECTION }}
+          TF_VAR_NOCOBASE_DOMAIN: ${{ secrets.NOCOBASE_DOMAIN }}
+
+      - name: Terraform plan
+        run: make plan
+        if: ${{ !inputs.isDeploy }}
+        working-directory: terraform/envs/${{ inputs.stageName }}
+        env:
+          TF_VAR_REGION: ${{ vars.AWS_REGION }}
+          TF_VAR_SYSTEM_NAME: ${{ vars.SYSTEM_NAME }}
+          TF_VAR_SLACK_INCOMING_WEBHOOK_ERROR_NOTIFIER_01: ${{ secrets.SLACK_INCOMING_WEBHOOK_ERROR_NOTIFIER_01 }}
+          TF_VAR_CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          TF_VAR_CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          TF_VAR_NOCOBASE_API_KEY: ${{ secrets.NOCOBASE_API_KEY }}
+          TF_VAR_NOCOBASE_COLLECTION: ${{ vars.NOCOBASE_COLLECTION }}
+          TF_VAR_NOCOBASE_DOMAIN: ${{ secrets.NOCOBASE_DOMAIN }}

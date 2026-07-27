@@ -1,8 +1,16 @@
-name: release-prd.yml
+name: plan-prd.yml
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - master
+    paths-ignore:
+      - "*.md"
+      - "tests/**/*"
+      - "kanban/**/*"
+      - ".claude/**/*"
+  pull_request:
+    branches:
+      - master
   workflow_dispatch:
 
 permissions:
@@ -17,5 +25,4 @@ jobs:
     with: 
       stageName: prd
       tagName: ${{ github.ref }}
-      isDeploy: true
     secrets: inherit
