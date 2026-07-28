@@ -6,8 +6,11 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from aws_lambda_powertools.utilities.data_classes import (
-    DynamoDBStreamEvent,
     event_source,
+)
+from aws_lambda_powertools.utilities.data_classes.dynamo_db_stream_event import (
+    DynamoDBRecordEventName,
+    DynamoDBStreamEvent,
 )
 from pydantic_settings import BaseSettings
 
@@ -60,7 +63,7 @@ def main(
     client_ssm: SSMClient = create_client("ssm"),
 ):
     event_item: EventItem = parse_event(event=event)
-    if event_item.event_name != "INSERT":
+    if event_item.event_name != DynamoDBRecordEventName.INSERT:
         return
 
     env = EnvironmentVariables()
@@ -82,7 +85,7 @@ def parse_event(*, event: DynamoDBStreamEvent) -> EventItem:
         # pyrefly: ignore [bad-argument-type]
         event_name=record.event_name,  # ty:ignore[invalid-argument-type]
         # pyrefly: ignore [missing-attribute]
-        id=record.dynamodb.keys["id"]["S"],  # ty:ignore[unresolved-attribute]
+        id=record.dynamodb.keys["id"],  # ty:ignore[unresolved-attribute]
     )
 
 
