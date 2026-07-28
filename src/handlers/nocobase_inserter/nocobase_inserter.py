@@ -98,7 +98,7 @@ def get_request_event(
     resp = table.get_item(Key={"id": item_id})
 
     # pyrefly: ignore [bad-assignment]
-    raw: bytes = resp["Item"]["zstd_binary"]  # ty:ignore[invalid-assignment]
+    raw: bytes = bytes(resp["Item"]["zstd_binary"])  # ty:ignore[invalid-assignment]
     return decompress(raw).decode()
 
 
