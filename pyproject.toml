@@ -18,7 +18,7 @@ dev = [
     "pyrefly>=1.1.1",
     "pytest>=9.1.1",
     "pytest-env>=1.6.0",
-    "ty>=0.0.61",
+    "ty>=0.0.64",
 ]
 powertools = [
     # arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV3-python314-arm64:36
