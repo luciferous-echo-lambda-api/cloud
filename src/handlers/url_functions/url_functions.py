@@ -2,6 +2,7 @@ import json
 from typing import TYPE_CHECKING
 from uuid import uuid7
 
+from aws_lambda_powertools.utilities.data_classes import LambdaFunctionUrlEvent
 from pydantic_settings import BaseSettings
 
 from utils.aws import create_resource
@@ -48,10 +49,19 @@ def main(
     )
     return {
         "statusCode": 200,
-        "headers": {"Content-Type": "application/json", "X-Record-ID": record_id},
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "X-Record-ID": record_id,
+        },
         "body": json.dumps(
             {"id": record_id, "event": event},
             ensure_ascii=False,
             default=custom_default,
         ),
     }
+
+
+@logging_function(logger)
+def parse_host(*, raw_event: dict) -> str | None:
+    event = LambdaFunctionUrlEvent(raw_event)
