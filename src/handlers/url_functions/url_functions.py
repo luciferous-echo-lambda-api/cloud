@@ -78,4 +78,4 @@ def parse_host(*, raw_event: dict) -> str | None:
     if referer is None:
         return None
     url = urlparse(referer)
-    return url.netloc
+    return f"{url.scheme}://{url.netloc}"
