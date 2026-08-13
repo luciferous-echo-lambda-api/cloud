@@ -82,7 +82,7 @@ def parse_event(*, event: DynamoDBStreamEvent) -> EventItem:
         # pyrefly: ignore [bad-argument-type]
         event_name=record.event_name,  # ty:ignore[invalid-argument-type]
         # pyrefly: ignore [missing-attribute]
-        id=record.dynamodb.keys["id"]["S"],  # ty:ignore[unresolved-attribute]
+        id=record.dynamodb.keys["id"],  # ty:ignore[unresolved-attribute]
     )
 
 
