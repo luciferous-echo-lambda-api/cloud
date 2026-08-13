@@ -83,6 +83,10 @@ resource "aws_lambda_function_url" "url_functions" {
   authorization_type = "NONE"
   function_name      = module.lambda_url_functions.function_name
   qualifier          = module.lambda_url_functions.function_alias_name
+
+  cors {
+    allow_origins = ["*"]
+  }
 }
 
 resource "aws_lambda_permission" "url_functions_url" {

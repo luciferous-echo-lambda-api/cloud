@@ -51,7 +51,6 @@ def main(
         "statusCode": 200,
         "headers": {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
             "X-Record-ID": record_id,
         },
         "body": json.dumps(
