@@ -1,5 +1,6 @@
 import json
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 from uuid import uuid7
 
 from aws_lambda_powertools.utilities.data_classes import LambdaFunctionUrlEvent
@@ -47,13 +48,21 @@ def main(
         table_name=env.ddb_table_name,
         resource=resource_ddb,
     )
+
+    hostname = parse_host(raw_event=event)
+
+    headers: dict[str, str] = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "X-Record-ID": record_id,
+    }
+
+    if hostname is not None:
+        headers["Access-Control-Allow-Origin"] = hostname
+
     return {
         "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "X-Record-ID": record_id,
-        },
+        "headers": headers,
         "body": json.dumps(
             {"id": record_id, "event": event},
             ensure_ascii=False,
@@ -65,3 +74,8 @@ def main(
 @logging_function(logger)
 def parse_host(*, raw_event: dict) -> str | None:
     event = LambdaFunctionUrlEvent(raw_event)
+    referer = event.headers.get("referer")
+    if referer is None:
+        return None
+    url = urlparse(referer)
+    return url.netloc
