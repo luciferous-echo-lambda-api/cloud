@@ -12,6 +12,7 @@ from aws_lambda_powertools.utilities.data_classes import (
 from aws_lambda_powertools.utilities.data_classes.dynamo_db_stream_event import (
     DynamoDBRecordEventName,
 )
+from boto3.dynamodb.types import Binary
 from pydantic_settings import BaseSettings
 
 from utils.aws import create_client, create_resource
@@ -98,7 +99,10 @@ def get_request_event(
     resp = table.get_item(Key={"id": item_id})
 
     # pyrefly: ignore [bad-assignment]
-    raw: bytes = resp["Item"]["zstd_binary"]  # ty:ignore[invalid-assignment]
+    raw: bytes | Binary = resp["Item"]["zstd_binary"]  # ty:ignore[invalid-assignment]
+    if isinstance(raw, Binary):
+        # pyrefly: ignore [bad-argument-type]
+        raw = bytes(raw)  # ty:ignore[invalid-argument-type]
     return decompress(raw).decode()
 
 
