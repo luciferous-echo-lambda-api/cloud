@@ -9,6 +9,9 @@ from aws_lambda_powertools.utilities.data_classes import (
     DynamoDBStreamEvent,
     event_source,
 )
+from aws_lambda_powertools.utilities.data_classes.dynamo_db_stream_event import (
+    DynamoDBRecordEventName,
+)
 from pydantic_settings import BaseSettings
 
 from utils.aws import create_client, create_resource
@@ -60,8 +63,7 @@ def main(
     client_ssm: SSMClient = create_client("ssm"),
 ):
     event_item: EventItem = parse_event(event=event)
-    if event_item.event_name != "INSERT":
-        logger.debug("not insert")
+    if event_item.event_name != DynamoDBRecordEventName.INSERT:
         return
 
     env = EnvironmentVariables()
@@ -166,4 +168,3 @@ def create_nocobase_record(
             raise
 
     process_create_nocobase_record()
-    logger.debug("success insert")
