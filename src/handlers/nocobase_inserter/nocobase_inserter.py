@@ -61,6 +61,7 @@ def main(
 ):
     event_item: EventItem = parse_event(event=event)
     if event_item.event_name != "INSERT":
+        logger.debug("not insert")
         return
 
     env = EnvironmentVariables()
@@ -165,3 +166,4 @@ def create_nocobase_record(
             raise
 
     process_create_nocobase_record()
+    logger.debug("success insert")
