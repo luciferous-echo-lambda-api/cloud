@@ -59,6 +59,7 @@ def main(
 
     if hostname is not None:
         headers["Access-Control-Allow-Origin"] = hostname
+        headers["Access-Control-Allow-Credentials"] = "true"
 
     return {
         "statusCode": 200,
